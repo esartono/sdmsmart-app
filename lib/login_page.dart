@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:sdmsmart/dashboard.dart';
 import 'package:sdmsmart/sign_in.dart';
 
 // import 'first_screen.dart';
-// import 'dashboard.dart';
 import 'dash.dart';
 
 class LoginPage extends StatefulWidget {
@@ -54,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
               MaterialPageRoute(
                 builder: (context) {
                   // return FirstScreen();
-                  // return MenuDashboardPage();
                   return HomeScreen();
                 },
               ),

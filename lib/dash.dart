@@ -11,10 +11,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    var cardTextStyle = TextStyle(
-      fontFamily: 'Montserrat Regular',
-      fontSize: 14,
-    );
+    final ScrollController _scrollController = ScrollController();
+    final List<String> entries = <String>['A', 'B', 'C', 'D', 'E'];
+    final List<int> colorCodes = <int>[600, 500, 100, 300, 200];
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -82,20 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             elevation: 8,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    GambarLogo('assets/icons/clock.png'),
-                                    SizedBox(height: 3),
-                                    Text(
-                                      'Absensi \n Kehadiran',
-                                      style: cardTextStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ]),
-                            ),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Gambarnya('assets/icons/clock.png'),
+                                  Textnya('Absensi \n Kehadiran'),
+                                ]),
                           ),
                         ),
                         InkWell(
@@ -107,39 +99,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             elevation: 8,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    GambarLogo('assets/icons/report.png'),
-                                    SizedBox(height: 3),
-                                    Text(
-                                      'Rekapitulasi \n Kehadiran',
-                                      style: cardTextStyle,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ]),
-                            ),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Gambarnya('assets/icons/report.png'),
+                                  Textnya('Rekapitulasi \n Kehadiran'),
+                                ]),
                           ),
                         ),
                       ],
                     ),
                   ),
                   Expanded(
-                      child: GridView.count(
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          primary: false,
-                          crossAxisCount: 3,
-                          children: <Widget>[
-                        TextButton(
-                          onPressed: () => {},
-                          child: Column(
-                            children: <Widget>[Icon(Icons.add), Text("Add")],
-                          ),
-                        ),
-                      ]))
+                    child: Scrollbar(
+                      isAlwaysShown: true,
+                      controller: _scrollController,
+                      child: ListView.builder(
+                          padding: const EdgeInsets.all(8),
+                          itemCount: entries.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              height: 50,
+                              color: Colors.amber[colorCodes[index]],
+                              child: Center(
+                                  child: Text('Entry ${entries[index]}')),
+                            );
+                          }),
+                    ),
+                  ),
                 ],
               ),
             ),
