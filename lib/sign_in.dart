@@ -1,14 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sdmsmart/config/api.dart';
+
+import 'dart:async';
+import 'dart:convert';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 
-String name;
-String email;
 String uid;
-String imageUrl;
 
 Future<String> signInWithGoogle() async {
   await Firebase.initializeApp();
@@ -27,16 +29,10 @@ Future<String> signInWithGoogle() async {
   final User user = authResult.user;
 
   if (user != null) {
-    // Checking if email and name is null
-    assert(user.email != null);
-    assert(user.displayName != null);
+    // Checking if uid is null
     assert(user.uid != null);
-    assert(user.photoURL != null);
 
-    name = user.displayName;
-    email = user.email;
     uid = user.uid;
-    imageUrl = user.photoURL;
 
     assert(!user.isAnonymous);
     assert(await user.getIdToken() != null);
@@ -44,6 +40,20 @@ Future<String> signInWithGoogle() async {
     final User currentUser = _auth.currentUser;
     assert(user.uid == currentUser.uid);
 
+    var data = {
+      'uid': uid,
+      'kunci': 'e48076dd0c3cd2fb83dc17609a8c8f1f',
+    };
+
+    var res = await Network().userData(data);
+    Map<String, dynamic> body = jsonDecode(res);
+
+    // var cek = res."success";
+    var cek = body['success'];
+    if (cek == 'EKO') {
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString('user', json.encode(body['user']));
+    }
     return '$user';
   }
 

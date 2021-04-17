@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-
+import 'package:sdmsmart/formabsen.dart';
+import 'package:sdmsmart/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sdmsmart/config/image_icon.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -8,6 +11,33 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String name, pasfoto, nip, idpeg, email;
+
+  @override
+  void initState() {
+    _loadUserData();
+    super.initState();
+  }
+
+  _loadUserData() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var user = jsonDecode(localStorage.getString('user'));
+
+    print(user);
+
+    if (user != null) {
+      setState(() {
+        name = user['name'];
+        nip = user['nip'];
+        idpeg = user['idpeg'];
+        email = user['email'];
+        pasfoto =
+            'https://pbs.twimg.com/profile_images/637878188949897218/tD6ZRU8R_400x400.jpg';
+        // 'http://sdmsmart.nurulfikri.sch.id/fnc_file/func_setimage.php?action=employee&id=1000065';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -37,8 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: <Widget>[
                         CircleAvatar(
                           radius: 32,
-                          backgroundImage: NetworkImage(
-                              'https://pbs.twimg.com/profile_images/637878188949897218/tD6ZRU8R_400x400.jpg'),
+                          backgroundImage: NetworkImage('$pasfoto'),
                         ),
                         SizedBox(
                           width: 16,
@@ -48,14 +77,21 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Eko Sartono',
+                              '$name',
                               style: TextStyle(
                                   fontFamily: 'Montserrat Medium',
                                   color: Colors.white,
                                   fontSize: 20),
                             ),
                             Text(
-                              '1000065',
+                              '$idpeg',
+                              style: TextStyle(
+                                  fontFamily: 'Montserrat Regular',
+                                  color: Colors.white,
+                                  fontSize: 14),
+                            ),
+                            Text(
+                              '$email',
                               style: TextStyle(
                                   fontFamily: 'Montserrat Regular',
                                   color: Colors.white,
@@ -75,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: <Widget>[
                         InkWell(
                           onTap: () {
-                            print("Absen");
+                            absenPegawai();
                           },
                           child: Card(
                             color: Colors.lightGreen,
@@ -134,5 +170,20 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  void absenPegawai() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FormAbsen()),
+    );
+  }
+
+  void logout() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.remove('user');
+    localStorage.remove('token');
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }
