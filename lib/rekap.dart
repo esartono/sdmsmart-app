@@ -1,11 +1,9 @@
 import 'dart:convert';
-// import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:sdmsmart/dash.dart';
 import 'package:sdmsmart/config/api.dart';
-import 'package:sdmsmart/config/image_icon.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:android_intent/android_intent.dart';
 
@@ -16,9 +14,10 @@ class FormAbsen extends StatefulWidget {
 
 class _FormAbsenState extends State<FormAbsen> {
   final _formKey = GlobalKey<FormState>();
+  Timer _timer;
 
-  int jenisAbsensId;
-  String id, name, pasfoto, nip, idpeg, email, absen, lang, lat, keterangan;
+  int jenisAbsensId, userId;
+  String name, pasfoto, nip, idpeg, email, absen, lang, lat, keterangan;
 
   _showMsg(msg) {
     final snackBar = SnackBar(
@@ -41,7 +40,7 @@ class _FormAbsenState extends State<FormAbsen> {
 
     if (user != null) {
       setState(() {
-        id = user['google_id'];
+        userId = user['id'];
         name = user['name'];
         nip = user['nip'];
         idpeg = user['idpeg'];
@@ -115,46 +114,20 @@ class _FormAbsenState extends State<FormAbsen> {
                     ),
                   ),
                   Expanded(
-                    child: GridView.count(
-                      mainAxisSpacing: 20,
-                      crossAxisSpacing: 10,
-                      primary: false,
-                      crossAxisCount: 2,
-                      children: <Widget>[
-                        InkWell(
-                          onTap: () {
-                            absenMasuk();
-                          },
-                          child: Card(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            elevation: 8,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Gambarnya('assets/icons/masuk.png'),
-                                  Textnya('Absensi \n Kehadiran'),
-                                ]),
+                    child: Table(
+                      border: TableBorder.all(width: 1.0, color: Colors.green),
+                      children: [
+                        TableRow(children: [
+                          Column(
+                            children: [Text('Hari')],
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            print("Rekap");
-                          },
-                          child: Card(
-                            color: Colors.blueAccent,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            elevation: 8,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Gambarnya('assets/icons/report.png'),
-                                  Textnya('Rekapitulasi \n Kehadiran'),
-                                ]),
+                          Column(
+                            children: [Text('Datang')],
                           ),
-                        ),
+                          Column(
+                            children: [Text('Pulang')],
+                          ),
+                        ])
                       ],
                     ),
                   ),
@@ -167,82 +140,21 @@ class _FormAbsenState extends State<FormAbsen> {
     );
   }
 
-  //Check GPS enable or Disable
-  _gpsOke() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return 'Location services are disabled.';
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return 'Location permissions are denied';
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return 'Location permissions are permanently denied, we cannot request permissions.';
-    }
-    return 'EKO';
-  }
-
-  void kirimData(jenisAbsensId, absen, keterangan) async {
+  void getData() async {
     var data = {
       'kunci': 'e48076dd0c3cd2fb83dc17609a8c8f1f',
-      'jenisabsens_id': jenisAbsensId,
-      'google_id': id,
-      'absen': absen,
-      'lang': lang,
-      'lat': lat,
-      'keterangan': keterangan,
+      'user_id': userId,
     };
 
-    var res = await Network().userAbsen(data, 'absen');
+    var res = await Network().getAbsen(data, 'absens');
     Map<String, dynamic> body = jsonDecode(res);
 
+    var cek = body['success'];
+    if (cek == 'OK') {
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString('absen', json.encode(body['absen']));
+    }
     var msg = body['message'];
     _showMsg(msg);
-  }
-
-  void absenMasuk() async {
-    var cekgps = await _gpsOke();
-    if (cekgps == 'EKO') {
-      Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.best,
-              forceAndroidLocationManager: true)
-          .then((Position position) {
-        setState(() {
-          lat = position.latitude.toString();
-          lang = position.longitude.toString();
-          kirimData(1, 'masuk', 'hadir');
-        });
-      }).catchError((e) {
-        print(e);
-      });
-    }
-  }
-
-  void absenPulang() async {
-    var cekgps = await _gpsOke();
-    if (cekgps == 'EKO') {
-      Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.best,
-              forceAndroidLocationManager: true)
-          .then((Position position) {
-        setState(() {
-          lat = position.latitude.toString();
-          lang = position.longitude.toString();
-          kirimData(1, 'pulang', 'hadir');
-        });
-      }).catchError((e) {
-        print(e);
-      });
-    }
   }
 }

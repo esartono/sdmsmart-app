@@ -3,9 +3,20 @@ import 'dart:io';
 import 'dart:async';
 
 class Network {
-  userData(data) async {
-    String url = 'https://fire.nurulfikri.sch.id/api/v1/user';
+  final String _url = 'https://fire.nurulfikri.sch.id/api/v1/';
 
+  userData(data, linknya) async {
+    String url = _url + linknya;
+    return await apiRequest(url, data);
+  }
+
+  userAbsen(data, linknya) async {
+    String url = _url + linknya;
+    return await apiRequest(url, data);
+  }
+
+  getAbsen(data, linknya) async {
+    String url = _url + linknya;
     return await apiRequest(url, data);
   }
 

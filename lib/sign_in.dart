@@ -45,16 +45,20 @@ Future<String> signInWithGoogle() async {
       'kunci': 'e48076dd0c3cd2fb83dc17609a8c8f1f',
     };
 
-    var res = await Network().userData(data);
+    var res = await Network().userData(data, 'user');
     Map<String, dynamic> body = jsonDecode(res);
 
-    // var cek = res."success";
     var cek = body['success'];
     if (cek == 'EKO') {
       SharedPreferences localStorage = await SharedPreferences.getInstance();
       localStorage.setString('user', json.encode(body['user']));
+      localStorage.setString('uid', uid);
+      localStorage.setBool('loggedIn', true);
+      return 'eko';
+    } else {
+      var msg = body['message'];
+      return msg;
     }
-    return '$user';
   }
 
   return null;
