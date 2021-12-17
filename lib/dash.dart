@@ -7,7 +7,7 @@ import 'package:sdmsmart/formabsen.dart';
 import 'package:sdmsmart/sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sdmsmart/config/image_icon.dart';
-import 'package:sdmsmart/config/api.dart';
+// import 'package:sdmsmart/config/api.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer _timer;
   String googleId, name, pasfoto, nip, idpeg, email;
 
-  List<dynamic> hari = ['1', '2', '3', '4', '5', '6', '7'];
+  List<dynamic> hari = ['1', '2', '3', '4', '5', '6', '7', '8'];
   List<dynamic> tanggal = [];
   List<dynamic> masuk = [];
   List<dynamic> pulang = [];
@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     _loadUserData();
-    _loadAbsen();
     super.initState();
     _initializeTimer();
   }
@@ -34,47 +33,23 @@ class _HomeScreenState extends State<HomeScreen> {
   _loadUserData() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var user = jsonDecode(localStorage.getString('user'));
-
-    if (user != null) {
-      if (mounted) {
-        setState(() {
-          googleId = user['google_id'];
-          name = user['name'];
-          nip = user['nip'];
-          idpeg = user['idpeg'];
-          email = user['email'];
-          pasfoto =
-              'https://pbs.twimg.com/profile_images/637878188949897218/tD6ZRU8R_400x400.jpg';
-          // 'http://sdmsmart.nurulfikri.sch.id/fnc_file/func_setimage.php?action=employee&id=1000065';
-        });
-      }
-    }
-  }
-
-  _loadAbsen() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var googleId = localStorage.getString('uid');
-    var data = {
-      'kunci': 'e48076dd0c3cd2fb83dc17609a8c8f1f',
-      'id': googleId,
-    };
-
-    var res = await Network().getAbsen(data, 'absensi');
-    Map<String, dynamic> body = jsonDecode(res);
-    var cek = body['success'];
-    Map<String, dynamic> absen = body['absen'];
-    print(body['message']);
-    if (cek == 'EKO') {
+    var absen = jsonDecode(localStorage.getString('absen'));
+    setState(() {
+      name = user['name'];
+      nip = user['nip'];
+      email = user['email'];
+      pasfoto =
+          'http://sdmsmart.nurulfikri.sch.id/fnc_file/func_setimage.php?action=employee&id=' +
+              user['idpeg'];
       tanggal = absen['tanggal'];
       masuk = absen['masuk'];
       pulang = absen['pulang'];
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final ScrollController _scrollController = ScrollController();
 
     return WillPopScope(
       onWillPop: _onBackPressed,
@@ -93,14 +68,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: <Widget>[
                     Container(
-                      height: 64,
-                      margin: EdgeInsets.only(bottom: 20),
+                      height: size.height * .1,
+                      margin: EdgeInsets.only(bottom: 10),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           CircleAvatar(
                             radius: 32,
-                            backgroundImage: NetworkImage('$pasfoto'),
+                            backgroundImage: (pasfoto != null)
+                                ? NetworkImage('$pasfoto')
+                                : null,
                           ),
                           SizedBox(
                             width: 16,
@@ -114,10 +91,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                     fontFamily: 'Montserrat Medium',
                                     color: Colors.white,
-                                    fontSize: 20),
+                                    fontSize: 16),
                               ),
                               Text(
-                                '$idpeg',
+                                '$nip',
                                 style: TextStyle(
                                     fontFamily: 'Montserrat Regular',
                                     color: Colors.white,
@@ -128,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                     fontFamily: 'Montserrat Regular',
                                     color: Colors.white,
-                                    fontSize: 14),
+                                    fontSize: 12),
                               ),
                             ],
                           ),
@@ -136,88 +113,98 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     Expanded(
-                      child: GridView.count(
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        primary: false,
-                        crossAxisCount: 2,
-                        children: <Widget>[
-                          InkWell(
-                            onTap: () {
-                              absenPegawai();
-                            },
-                            child: Card(
-                              color: Colors.lightGreen,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              elevation: 8,
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Gambarnya('assets/icons/clock.png'),
-                                    Textnya('Absensi \n Kehadiran'),
-                                  ]),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                          Container(
+                            height: size.height * 0.25,
+                            child: GridView.count(
+                              crossAxisSpacing: 6,
+                              primary: false,
+                              crossAxisCount: 2,
+                              shrinkWrap: true,
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: () {
+                                    absenPegawai();
+                                  },
+                                  child: Card(
+                                    color: Colors.lightGreen,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    elevation: 5,
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Gambarnya('assets/icons/clock.png'),
+                                          Textnya('Absensi \n Kehadiran'),
+                                        ]),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    print("Rekap");
+                                  },
+                                  child: Card(
+                                    color: Colors.blueAccent,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    elevation: 5,
+                                    child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Gambarnya('assets/icons/report.png'),
+                                          Textnya('Rekapitulasi \n Kehadiran'),
+                                        ]),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              print("Rekap");
-                            },
-                            child: Card(
-                              color: Colors.blueAccent,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              elevation: 8,
-                              child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Gambarnya('assets/icons/report.png'),
-                                    Textnya('Rekapitulasi \n Kehadiran'),
-                                  ]),
+                          Container(
+                            height: size.height * 0.46,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: DataTable(
+                                  columnSpacing: size.width * .08,
+                                  columns: const <DataColumn>[
+                                    DataColumn(
+                                      label: Text(
+                                        'No.',
+                                      ),
+                                    ),
+                                    DataColumn(
+                                      label: Text(
+                                        'Tanggal',
+                                      ),
+                                    ),
+                                    DataColumn(
+                                      label: Text(
+                                        'Masuk',
+                                      ),
+                                    ),
+                                    DataColumn(
+                                      label: Text(
+                                        'Pulang',
+                                      ),
+                                    ),
+                                  ],
+                                  rows: List.generate(
+                                      tanggal.length,
+                                      (index) => DataRow(
+                                            cells: <DataCell>[
+                                              DataCell(Text(hari[index])),
+                                              DataCell(Text(tanggal[index])),
+                                              DataCell(Text(masuk[index])),
+                                              DataCell(Text(pulang[index])),
+                                            ],
+                                          ))),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: DataTable(
-                            columnSpacing: size.width * .08,
-                            columns: const <DataColumn>[
-                              DataColumn(
-                                label: Text(
-                                  'No.',
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'Tanggal',
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'Masuk',
-                                ),
-                              ),
-                              DataColumn(
-                                label: Text(
-                                  'Datang',
-                                ),
-                              ),
-                            ],
-                            rows: List.generate(
-                                tanggal.length,
-                                (index) => DataRow(
-                                      cells: <DataCell>[
-                                        DataCell(Text(hari[index])),
-                                        DataCell(Text(tanggal[index])),
-                                        DataCell(Text(masuk[index])),
-                                        DataCell(Text(pulang[index])),
-                                      ],
-                                    ))),
-                      ),
-                    ),
+                          )
+                        ])),
                   ],
                 ),
               ),
@@ -267,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Image(
                         image: AssetImage("assets/logo_nf.png"), height: 150.0),
                     SizedBox(height: 20),
-                    _signInButton(),
+                    _signOutButton(),
                   ],
                 ),
               ),
@@ -276,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  Widget _signInButton() {
+  Widget _signOutButton() {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         primary: Colors.white,
@@ -288,6 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       onPressed: () {
         logout();
+        SystemNavigator.pop();
       },
       child: Padding(
         padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -318,6 +306,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void logout() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    localStorage.clear();
+    signOutGoogle();
+  }
+
+  void exitApp() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     localStorage.clear();
     signOutGoogle();

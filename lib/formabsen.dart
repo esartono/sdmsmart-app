@@ -7,7 +7,6 @@ import 'package:sdmsmart/config/api.dart';
 import 'package:sdmsmart/config/image_icon.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:android_intent/android_intent.dart';
 
 class FormAbsen extends StatefulWidget {
   @override
@@ -15,10 +14,10 @@ class FormAbsen extends StatefulWidget {
 }
 
 class _FormAbsenState extends State<FormAbsen> {
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
 
   int jenisAbsensId;
-  String id, name, pasfoto, nip, idpeg, email, absen, lang, lat, keterangan;
+  String name, pasfoto, nip, idpeg, email, absen, lang, lat, keterangan;
 
   _showMsg(msg) {
     final snackBar = SnackBar(
@@ -31,6 +30,7 @@ class _FormAbsenState extends State<FormAbsen> {
 
   @override
   void initState() {
+    _gpsOke();
     _loadUserData();
     super.initState();
   }
@@ -41,14 +41,13 @@ class _FormAbsenState extends State<FormAbsen> {
 
     if (user != null) {
       setState(() {
-        id = user['google_id'];
         name = user['name'];
         nip = user['nip'];
         idpeg = user['idpeg'];
         email = user['email'];
         pasfoto =
-            'https://pbs.twimg.com/profile_images/637878188949897218/tD6ZRU8R_400x400.jpg';
-        // 'http://sdmsmart.nurulfikri.sch.id/fnc_file/func_setimage.php?action=employee&id=1000065';
+            'http://sdmsmart.nurulfikri.sch.id/fnc_file/func_setimage.php?action=employee&id=' +
+                user['idpeg'];
       });
     }
   }
@@ -72,14 +71,16 @@ class _FormAbsenState extends State<FormAbsen> {
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: 64,
-                    margin: EdgeInsets.only(bottom: 20),
+                    height: size.height * .1,
+                    margin: EdgeInsets.only(bottom: 10),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         CircleAvatar(
                           radius: 32,
-                          backgroundImage: NetworkImage('$pasfoto'),
+                          backgroundImage: (pasfoto != null)
+                              ? NetworkImage('$pasfoto')
+                              : null,
                         ),
                         SizedBox(
                           width: 16,
@@ -93,10 +94,10 @@ class _FormAbsenState extends State<FormAbsen> {
                               style: TextStyle(
                                   fontFamily: 'Montserrat Medium',
                                   color: Colors.white,
-                                  fontSize: 20),
+                                  fontSize: 16),
                             ),
                             Text(
-                              '$idpeg',
+                              '$nip',
                               style: TextStyle(
                                   fontFamily: 'Montserrat Regular',
                                   color: Colors.white,
@@ -107,7 +108,7 @@ class _FormAbsenState extends State<FormAbsen> {
                               style: TextStyle(
                                   fontFamily: 'Montserrat Regular',
                                   color: Colors.white,
-                                  fontSize: 14),
+                                  fontSize: 12),
                             ),
                           ],
                         ),
@@ -115,46 +116,76 @@ class _FormAbsenState extends State<FormAbsen> {
                     ),
                   ),
                   Expanded(
-                    child: GridView.count(
-                      mainAxisSpacing: 20,
-                      crossAxisSpacing: 10,
-                      primary: false,
-                      crossAxisCount: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        InkWell(
-                          onTap: () {
-                            absenMasuk();
-                          },
-                          child: Card(
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            elevation: 8,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Gambarnya('assets/icons/masuk.png'),
-                                  Textnya('Absensi \n Kehadiran'),
-                                ]),
+                        Container(
+                          height: size.height * 0.28,
+                          child: GridView.count(
+                            mainAxisSpacing: 20,
+                            crossAxisSpacing: 10,
+                            primary: false,
+                            crossAxisCount: 2,
+                            children: <Widget>[
+                              InkWell(
+                                onTap: () {
+                                  absenMasuk();
+                                },
+                                child: Card(
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  elevation: 8,
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Gambarnya('assets/icons/masuk.png'),
+                                        Textnya('ABSEN MASUK'),
+                                      ]),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  absenPulang();
+                                },
+                                child: Card(
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  elevation: 8,
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Gambarnya('assets/icons/pulang.png'),
+                                        Textnya('ABSEN PULANG'),
+                                      ]),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        InkWell(
-                          onTap: () {
-                            print("Rekap");
-                          },
-                          child: Card(
-                            color: Colors.blueAccent,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            elevation: 8,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Gambarnya('assets/icons/report.png'),
-                                  Textnya('Rekapitulasi \n Kehadiran'),
-                                ]),
-                          ),
-                        ),
+                        Container(
+                            decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                border: Border.all(color: Colors.redAccent),
+                                borderRadius: BorderRadius.circular(10.0)),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15.0, vertical: 15.0),
+                            child: Row(
+                              children: <Widget>[
+                                Flexible(
+                                  child: Text(
+                                      'Tekan tombol "ABSEN MASUK" untuk masuk dan Tekan tombol "ABSEN PULANG" untuk pulang',
+                                      maxLines: 3,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.normal)),
+                                )
+                              ],
+                            ))
                       ],
                     ),
                   ),
@@ -195,18 +226,26 @@ class _FormAbsenState extends State<FormAbsen> {
   void kirimData(jenisAbsensId, absen, keterangan) async {
     var data = {
       'kunci': 'e48076dd0c3cd2fb83dc17609a8c8f1f',
+      'nip': nip,
       'jenisabsens_id': jenisAbsensId,
-      'google_id': id,
       'absen': absen,
       'lang': lang,
       'lat': lat,
       'keterangan': keterangan,
     };
 
-    var res = await Network().userAbsen(data, 'absen');
+    var res = await Network().masuk(data, 'absen');
     Map<String, dynamic> body = jsonDecode(res);
 
+    var cek = body['success'];
     var msg = body['message'];
+
+    if (cek == 'EKO') {
+      Map<String, dynamic> absen = body['absen'];
+      SharedPreferences localStorage = await SharedPreferences.getInstance();
+      localStorage.setString('absen', jsonEncode(absen));
+    }
+
     _showMsg(msg);
   }
 
@@ -214,7 +253,7 @@ class _FormAbsenState extends State<FormAbsen> {
     var cekgps = await _gpsOke();
     if (cekgps == 'EKO') {
       Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.best,
+              desiredAccuracy: LocationAccuracy.medium,
               forceAndroidLocationManager: true)
           .then((Position position) {
         setState(() {
@@ -225,6 +264,8 @@ class _FormAbsenState extends State<FormAbsen> {
       }).catchError((e) {
         print(e);
       });
+    } else {
+      _showMsg(cekgps);
     }
   }
 
@@ -232,7 +273,7 @@ class _FormAbsenState extends State<FormAbsen> {
     var cekgps = await _gpsOke();
     if (cekgps == 'EKO') {
       Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.best,
+              desiredAccuracy: LocationAccuracy.medium,
               forceAndroidLocationManager: true)
           .then((Position position) {
         setState(() {
@@ -243,6 +284,8 @@ class _FormAbsenState extends State<FormAbsen> {
       }).catchError((e) {
         print(e);
       });
+    } else {
+      _showMsg(cekgps);
     }
   }
 }

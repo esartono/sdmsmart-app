@@ -2,7 +2,7 @@
 
 In this app, I have implemented **Google Sign In** using **Firebase** for both Android and iOS, fixing all the issues with the latest Flutter updates. To understand how to fix all the **Firebase** issues in **Flutter** make sure you check out my **Medium article**.
 
-> NOTE: The project is tested on **Flutter 2.0 (stable)** and using all the latest versions of the plugins.
+> NOTE: The project is tested on **Flutter 2.0.4 (stable)** and using all the latest versions of the plugins.
 
 ## Project versions
 

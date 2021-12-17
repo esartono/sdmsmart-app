@@ -18,6 +18,10 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Needed to access location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Needed to access location</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

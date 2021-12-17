@@ -31,6 +31,7 @@ class Textnya extends StatelessWidget {
     );
 
     return Container(
+      margin: EdgeInsets.only(top: 10),
       child: Text(
         _katanya,
         style: cardTextStyle,

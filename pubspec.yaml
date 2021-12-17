@@ -11,7 +11,7 @@ description: Aplikasi Absensi SDMSMART - SIT Nurul Fikri.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -23,14 +23,15 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  firebase_core: ^1.0.0
-  firebase_auth: ^1.0.0
-  google_sign_in: ^5.0.0
+  flutter_easyloading: ^3.0.0
+  firebase_core: ^1.1.1
+  firebase_auth: ^1.1.4
+  google_sign_in: ^5.0.2
   http: ^0.13.1
   shared_preferences: ^2.0.5
-  geolocator: ^7.0.3
+  geolocator: ^8.0.0
   android_intent: ^2.0.0
-
+  permission_handler: ^8.3.0
 
 dev_dependencies:
   flutter_test:

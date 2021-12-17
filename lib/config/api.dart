@@ -4,8 +4,9 @@ import 'dart:async';
 
 class Network {
   final String _url = 'https://fire.nurulfikri.sch.id/api/v1/';
+  // final String _url = 'http://127.0.0.1:8000/api/v1/';
 
-  userData(data, linknya) async {
+  masuk(data, linknya) async {
     String url = _url + linknya;
     return await apiRequest(url, data);
   }
@@ -22,6 +23,8 @@ class Network {
 
   Future<String> apiRequest(String url, Map jsonMap) async {
     HttpClient httpClient = new HttpClient();
+    httpClient.badCertificateCallback =
+        ((X509Certificate cert, String host, int port) => true);
     HttpClientRequest request = await httpClient.postUrl(Uri.parse(url));
     request.headers.set('content-type', 'application/json');
     request.add(utf8.encode(json.encode(jsonMap)));

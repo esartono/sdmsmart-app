@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:sdmsmart/dash.dart';
@@ -13,8 +13,8 @@ class FormAbsen extends StatefulWidget {
 }
 
 class _FormAbsenState extends State<FormAbsen> {
-  final _formKey = GlobalKey<FormState>();
-  Timer _timer;
+  // final _formKey = GlobalKey<FormState>();
+  // Timer _timer;
 
   int jenisAbsensId, userId;
   String name, pasfoto, nip, idpeg, email, absen, lang, lat, keterangan;
